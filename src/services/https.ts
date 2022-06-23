@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 
 const getHeaders = () => {
   return {
@@ -15,7 +16,7 @@ export const httpGet = async (url: string) => {
     const responseData = await response.json();
 
     return responseData;
-  } catch (error) {
-    return error;
+  } catch (error: any) {
+    Alert.alert(error.message);
   }
 };
