@@ -1,4 +1,5 @@
 import { legacy_createStore as createStore } from 'redux';
+import { persistStore } from 'redux-persist';
 import reducers from './reducers';
 
 import { SongState } from './reducers/songs-reducer';
@@ -12,4 +13,9 @@ export interface ApplicationState {
   songs: SongState,
 }
 
-export const store = createStore(reducers);
+export default () => {
+  let store = createStore(reducers);
+  let persistor = persistStore(store);
+
+  return { store, persistor }
+}
