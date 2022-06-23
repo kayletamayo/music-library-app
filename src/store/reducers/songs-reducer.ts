@@ -1,19 +1,19 @@
 import { CustomAction } from '../store';
 import { Song, SongList } from '../../types/songs';
-import { songListDefault } from '../../defaults/songs';
+import { songListDefault, songDetail } from '../../defaults/songs';
 import { SongSections, SONG_SECTIONS } from '../../constants/songs';
 import { SONGS_ACTION_TYPES } from '../action-types';
 
 export interface SongState {
   songList: SongList[],
   sectionBy: SongSections;
-  songSelected: Song | {},
+  songSelected: Song,
 }
 
 const defaultState: SongState = {
   songList: [songListDefault],
   sectionBy: SONG_SECTIONS.COLLECTION_NAME,
-  songSelected: {},
+  songSelected: songDetail,
 };
 
 export default function songReducer(state = defaultState, action: CustomAction) {
@@ -27,6 +27,11 @@ export default function songReducer(state = defaultState, action: CustomAction) 
       return {
         ...state,
         sectionBy: action.data,
+      }
+    case SONGS_ACTION_TYPES.SET_SELECTED_SONG:
+      return {
+        ...state,
+        songSelected: action.data
       }
     default:
       return state;

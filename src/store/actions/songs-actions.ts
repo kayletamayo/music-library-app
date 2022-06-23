@@ -20,7 +20,7 @@ export const actionSetSectionBy = (sectionBy: SongSections): CustomAction => {
 
 export const actionSetSelectedSong = (song: Song): CustomAction => {
   return {
-    type: SONGS_ACTION_TYPES.SET_SONG_SECTION,
+    type: SONGS_ACTION_TYPES.SET_SELECTED_SONG,
     data: song,
   };
 };

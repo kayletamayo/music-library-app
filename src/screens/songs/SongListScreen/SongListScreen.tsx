@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SectionList, SectionListData, ActivityIndicator } from 'react-native';
+import { View, Text, SectionList, SectionListData, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Input } from '../../../components/_shared';
 import SongGroupModal from '../../../components/songs/SongGroupModal/SongGroupModal';
 
 import { useItunesApi } from '../../../hooks/song-hooks';
-import { actionSetSongList } from '../../../store/actions/songs-actions';
+import { actionSetSongList, actionSetSelectedSong } from '../../../store/actions/songs-actions';
+import { formatDate } from '../../../utils/formatter';
 
 import styles from './SongListScreen.styles';
 import { ApplicationState } from '../../../store/store';
@@ -15,6 +17,7 @@ import { SongState } from '../../../store/reducers/songs-reducer';
 import { SONG_SECTIONS } from '../../../constants/songs';
 import { Song, SongList } from '../../../types/songs';
 import { colors } from '../../../theme/colors';
+import { ROUTES } from '../../../navigation/routes';
 
 interface Props {}
 
@@ -23,11 +26,21 @@ const SongListScreen: React.FC<Props> = () => {
   const { songList, sectionBy } = useSelector<ApplicationState, SongState>((state) => state.songs);
   const { data, loading } = useItunesApi(search);
 
+  const { navigate, setOptions } = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setOptions({ title: 'Songs' })
+  }, []);
 
   useEffect(() => {
     sortList();
   }, [data, sectionBy]);
+
+  const onSongSelect = (item: Song) => {
+    dispatch(actionSetSelectedSong(item));
+    navigate(ROUTES.SONG_DETAIL)
+  }
 
   const sortList = async () => {
     const results = data;
@@ -55,8 +68,7 @@ const SongListScreen: React.FC<Props> = () => {
     let sectionTitle = title;
 
     if (sectionBy === SONG_SECTIONS.RELEASED_DATE) {
-      const date = new Date(title)
-      sectionTitle = moment(date).format('MMMM DD, YYYY') || 'Unspecified Release Date';
+      sectionTitle = formatDate(title) || 'Unspecified Release Date';
     }
     return (
       <View style={[styles.sectionTitleView, styles.container]} key={trackId}>
@@ -68,8 +80,10 @@ const SongListScreen: React.FC<Props> = () => {
   const renderList = ({ item }: any) => {
     return (
       <View style={[styles.section, styles.container]} key={item.trackId}>
-        <Text style={styles.songTitle}>{item.trackName || 'Unknown Track Name'}</Text>
-        <Text>{item.artistName}</Text>
+        <TouchableOpacity onPress={() => onSongSelect(item)}>
+          <Text style={styles.songTitle}>{item.trackName || 'Unknown Track Name'}</Text>
+          <Text>{item.artistName}</Text>
+        </TouchableOpacity>
       </View>
     );
   };
