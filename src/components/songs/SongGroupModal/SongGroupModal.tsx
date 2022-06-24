@@ -36,7 +36,6 @@ const SongGroupModal: React.FC<Props> = () => {
   const hideOptionsModal = () => setShowOptions(false);
 
   const onSelectOption = (value: SongSections) => {
-    console.log(value);
     dispatch(actionSetSectionBy(value));
     hideOptionsModal();
   }
